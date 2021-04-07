@@ -16,8 +16,9 @@
 #include "zima.h"
 #include <stdio.h>
 
+
 #ifdef HAPTIC_ENABLE
-#    include "haptic.h"
+#include "haptic.h"
 extern haptic_config_t haptic_config;
 #endif
 
@@ -42,11 +43,14 @@ __attribute__((weak)) void oled_task_user(void) {
         oled_off();
         return;
     }
-
+    // run this block only if active i.e. inactive for not more than 30000ms
     if (timer_elapsed32(oled_timer) < 30000) {
         oled_on();
         oled_scroll_off();
+
+        // print this on OLED
         oled_write_P(PSTR("SplitKB's Zima"), false);
+
         char layer[2] = {0};
         snprintf(layer, sizeof(layer), "%d", get_highest_layer(layer_state));
         oled_write_P(PSTR("   L:"), false);
@@ -60,14 +64,15 @@ __attribute__((weak)) void oled_task_user(void) {
         } else {
             oled_write_ln_P(PSTR("RGB LIGHT DISABLED"), false);
         }
-#    ifdef AUDIO_ENABLE
-        oled_write_P(PSTR("Audio:"), false);
-        is_audio_on() ? oled_write_P(PSTR(" on"), false) : oled_write_P(PSTR("off"), false);
-#        ifdef AUDIO_CLICKY
-        oled_write_P(PSTR(" Clicky:"), false);
-        (is_clicky_on() && is_audio_on()) ? oled_write_P(PSTR(" on"), false) : oled_write_P(PSTR("off"), false);
-#        endif
-#    endif
+#   ifdef AUDIO_ENABLE
+    oled_write_P(PSTR("Audio:"), false);
+    is_audio_on() ? oled_write_P(PSTR(" on"), false) : oled_write_P(PSTR("off"), false);
+#   ifdef AUDIO_CLICKY
+    oled_write_P(PSTR(" Clicky:"), false);
+    (is_clicky_on() && is_audio_on()) ? oled_write_P(PSTR(" on"), false) : oled_write_P(PSTR("off"), false);
+#   endif
+#   endif
+    // run this block only if inactive (more than 30000ms have elapsed and less than 120000ms)
     } else {
         if (timer_elapsed32(oled_timer) < 120000) {
             oled_on();
@@ -79,6 +84,7 @@ __attribute__((weak)) void oled_task_user(void) {
             // clang-format on
             oled_write_ln_P(qmk_logo, false);
             oled_scroll_right();
+        // more than 120000ms have elapsed
         } else {
             oled_off();
         }
@@ -87,7 +93,6 @@ __attribute__((weak)) void oled_task_user(void) {
 
 bool process_record_kb(uint16_t keycode, keyrecord_t* record) {
     oled_timer = timer_read32();
-
     return process_record_user(keycode, record);
 }
 #endif
@@ -111,14 +116,14 @@ __attribute__((weak)) void encoder_update_user(uint8_t index, bool clockwise) {
             tap_code16(RGUI(KC_F9));
         }
     }
-#    ifdef OLED_DRIVER_ENABLE
+#   ifdef OLED_DRIVER_ENABLE
     oled_timer = timer_read32();
-#    endif
-#    if defined(AUDIO_ENABLE) && defined(AUDIO_CLICKY)
+#   endif
+#   if defined(AUDIO_ENABLE) && defined(AUDIO_CLICKY)
     if (is_audio_on() && is_clicky_on()) clicky_play();
-#    endif
-#    ifdef HAPTIC_ENABLE
+#   endif
+#   ifdef HAPTIC_ENABLE
     if (haptic_config.enable) haptic_play();
-#    endif
+#   endif
 }
 #endif
