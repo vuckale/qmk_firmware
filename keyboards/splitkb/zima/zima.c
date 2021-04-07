@@ -94,10 +94,22 @@ bool process_record_kb(uint16_t keycode, keyrecord_t* record) {
 
 #ifdef ENCODER_ENABLE
 __attribute__((weak)) void encoder_update_user(uint8_t index, bool clockwise) {
-    if (clockwise) {
-        tap_code16(KC_VOLU);
-    } else {
-        tap_code16(KC_VOLD);
+    if (layer_state_is(0)) {
+        if (clockwise) {
+            // KC_RGUI+F12 macro (volume up)
+            tap_code16(RGUI(KC_F12));
+        } else {
+            // KC_RGUI+F11 macro (volume down)
+            tap_code16(RGUI(KC_F11));
+        }
+    } else if (layer_state_is(1)) {
+        if (clockwise) {
+            // KC_RGUI+F10 macro (brightness up)
+            tap_code16(RGUI(KC_F10));
+        } else {
+            // KC_RGUI+F9 macro (brightness down)
+            tap_code16(RGUI(KC_F9));
+        }
     }
 #    ifdef OLED_DRIVER_ENABLE
     oled_timer = timer_read32();
