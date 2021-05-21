@@ -15,6 +15,10 @@
  */
 #include QMK_KEYBOARD_H
 
+enum custom_keycodes {
+    QMKBEST = SAFE_RANGE,
+};
+
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [0] = LAYOUT_ortho_4x3( /* Base */
         KC_MUTE, TG(1),   TG(2),
@@ -23,7 +27,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         KC_P1,   KC_P2,   KC_P3
     ),
     [1] = LAYOUT_ortho_4x3( /* Layer 1 */
-        RESET,   _______, XXXXXXX,
+        RESET,   _______, TG(3),
         AU_ON,   AU_OFF,  XXXXXXX,
         CK_TOGG, XXXXXXX, CK_UP,
         CK_RST,  XXXXXXX, CK_DOWN
@@ -33,5 +37,28 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         RGB_HUI, RGB_SAI, RGB_VAI,
         RGB_HUD, RGB_SAD, RGB_VAD,
         HPT_TOG, HPT_FBK, HPT_CONT
+    ),
+    [3] = LAYOUT_ortho_4x3( /* Layer 3*/
+        HPT_RST,  XXXXXXX,  _______,
+        HPT_TOG,  XXXXXXX,  XXXXXXX,
+        HPT_CONT, HPT_CONI, HPT_COND,
+        QMKBEST,  HPT_MODI, HPT_MODD
     )
 };
+
+// send_string + drv_pulse example
+bool process_record_user(uint16_t keycode, keyrecord_t *record) {
+    switch (keycode) {
+    case QMKBEST:
+        if (record->event.pressed) {
+            // when keycode QMKBEST is pressed
+            SEND_STRING("QMK is the best thing ever!");
+            DRV_pulse(52);
+        } else {
+            // when keycode QMKBEST is released
+        }
+        break;
+    }
+    return true;
+};
+

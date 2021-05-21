@@ -85,8 +85,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define RATED_VOLTAGE 3
 #define V_PEAK 5
 
-#define DRV_GREETING alert_750ms
-#define DRV_MODE_DEFAULT buzz
+#define DRV_GREETING 70
+#define DRV_MODE_DEFAULT 24
 // EC11K encoders have a different resolution than other EC11 encoders.
 // When using the default resolution of 4, if you notice your encoder skipping
 // every other tick, lower the resolution to 2.
